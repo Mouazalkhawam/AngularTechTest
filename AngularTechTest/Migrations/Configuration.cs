@@ -15,7 +15,7 @@ namespace AngularTechTest.Migrations
 
         protected override void Seed(ApplicationDbContext context)
         {
-            // هذا مثل Seeder في Laravel
+           
             if (!context.Employees.Any())
             {
                 context.Employees.AddOrUpdate(
@@ -34,6 +34,70 @@ namespace AngularTechTest.Migrations
 
                 context.SaveChanges();
             }
+
+   
+            if (!context.Tasks.Any())
+            {
+                context.Tasks.AddOrUpdate(
+                    t => t.TaskName,
+                    new Task { TaskName = "Install system" },
+                    new Task { TaskName = "Deploy on IIS" },
+                    new Task { TaskName = "Training Customers" },
+                    new Task { TaskName = "Analysis" },
+                    new Task { TaskName = "SRS" }
+                );
+
+                context.SaveChanges();
+            }
+
+            if (!context.EmployeeTasks.Any())
+            {
+              
+                var employees = context.Employees.OrderBy(e => e.Id).Take(5).ToList();
+
+           
+                var tasks = context.Tasks.OrderBy(t => t.Id).ToList();
+
+                if (employees.Count == 5 && tasks.Count == 5)
+                {
+                    
+                    context.EmployeeTasks.AddOrUpdate(
+                        et => new { et.EmployeeId, et.TaskId },
+                        new EmployeeTask { EmployeeId = employees[0].Id, TaskId = tasks[0].Id },
+                        new EmployeeTask { EmployeeId = employees[0].Id, TaskId = tasks[1].Id }
+                    );
+
+                    context.EmployeeTasks.AddOrUpdate(
+                        et => new { et.EmployeeId, et.TaskId },
+                        new EmployeeTask { EmployeeId = employees[1].Id, TaskId = tasks[1].Id },
+                        new EmployeeTask { EmployeeId = employees[1].Id, TaskId = tasks[2].Id }
+                    );
+
+                    context.EmployeeTasks.AddOrUpdate(
+                        et => new { et.EmployeeId, et.TaskId },
+                        new EmployeeTask { EmployeeId = employees[2].Id, TaskId = tasks[2].Id },
+                        new EmployeeTask { EmployeeId = employees[2].Id, TaskId = tasks[3].Id }
+                    );
+
+        
+                    context.EmployeeTasks.AddOrUpdate(
+                        et => new { et.EmployeeId, et.TaskId },
+                        new EmployeeTask { EmployeeId = employees[3].Id, TaskId = tasks[3].Id },
+                        new EmployeeTask { EmployeeId = employees[3].Id, TaskId = tasks[4].Id }
+                    );
+
+                    
+                    context.EmployeeTasks.AddOrUpdate(
+                        et => new { et.EmployeeId, et.TaskId },
+                        new EmployeeTask { EmployeeId = employees[4].Id, TaskId = tasks[0].Id },
+                        new EmployeeTask { EmployeeId = employees[4].Id, TaskId = tasks[4].Id }
+                    );
+
+                    context.SaveChanges();
+                }
+            }
+
+           
         }
     }
 }

@@ -1,6 +1,5 @@
 ﻿using System.Data.Entity;
 using AngularTechTest.Models;
-using static System.Data.Entity.Migrations.Model.UpdateDatabaseOperation;
 
 namespace AngularTechTest.Models
 {
@@ -13,5 +12,7 @@ namespace AngularTechTest.Models
         }
 
         public DbSet<Employee> Employees { get; set; }
+        public DbSet<Task> Tasks { get; set; }                
+        public DbSet<EmployeeTask> EmployeeTasks { get; set; } 
     }
 }
