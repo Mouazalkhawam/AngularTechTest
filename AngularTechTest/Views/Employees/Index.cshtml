@@ -39,10 +39,10 @@
             margin: 20px 0;
         }
 
-            .pagination li.active a {
-                background-color: #337ab7;
-                border-color: #337ab7;
-            }
+        .pagination li.active a {
+            background-color: #337ab7;
+            border-color: #337ab7;
+        }
 
         .spinner-border {
             display: inline-block;
@@ -57,9 +57,7 @@
         }
 
         @@keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
 
         .btn-tasks {
@@ -71,17 +69,57 @@
         .action-buttons {
             white-space: nowrap;
         }
+
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+
+        .toast-notification {
+            min-width: 250px;
+            margin-bottom: 10px;
+            padding: 15px 20px;
+            border-radius: 4px;
+            color: white;
+            font-weight: bold;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            animation: slideIn 0.3s ease;
+        }
+
+        .toast-success {
+            background-color: #28a745;
+        }
+
+        .toast-error {
+            background-color: #dc3545;
+        }
+
+        .toast-warning {
+            background-color: #ffc107;
+            color: #333;
+        }
+
+        .toast-info {
+            background-color: #17a2b8;
+        }
+
+        @@keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
     </style>
 </head>
-<body ng-controller="EmpCtrl">
+<body ng-controller="EmpCtrl as eCtr">
     <div class="container">
         <h2>Employees Management</h2>
 
-        <div ng-if="!employees || employees.length === 0" class="alert alert-info text-center">
+        <div ng-if="!eCtr.employees || eCtr.employees.length === 0" class="alert alert-info text-center">
             <strong>Loading employees data...</strong>
         </div>
 
-        <table class="table table-striped table-hover" ng-if="employees.length > 0">
+        <table class="table table-striped table-hover" ng-if="eCtr.employees.length > 0">
             <thead>
                 <tr>
                     <th>ID</th>
@@ -92,19 +130,19 @@
                 </tr>
             </thead>
             <tbody>
-                <tr dir-paginate="employee in employees | itemsPerPage: pageSize">
+                <tr dir-paginate="employee in eCtr.employees | itemsPerPage: eCtr.pageSize">
                     <td>{{employee.Id}}</td>
                     <td>{{employee.Name}}</td>
                     <td>{{employee.Department}}</td>
                     <td>{{employee.Salary | number:0}}</td>
                     <td class="action-buttons">
                         <button class="btn btn-primary btn-tasks"
-                                ng-click="openModal(employee)"
+                                ng-click="eCtr.openModal(employee)"
                                 title="Edit Salary">
                             <span class="glyphicon glyphicon-pencil"></span> Edit
                         </button>
                         <button class="btn btn-info btn-tasks"
-                                ng-click="openTasksModal(employee)"
+                                ng-click="eCtr.openTasksModal(employee)"
                                 title="View Tasks">
                             <span class="glyphicon glyphicon-tasks"></span> Tasks
                         </button>
@@ -112,19 +150,19 @@
                 </tr>
                 <tr class="total-row">
                     <td colspan="4" style="text-align: right;"><strong>Total Salaries:</strong></td>
-                    <td><strong>{{getTotalSalary() | number:0}}</strong></td>
+                    <td><strong>{{eCtr.getTotalSalary() | number:0}}</strong></td>
                 </tr>
             </tbody>
         </table>
 
-        <div class="text-center" ng-if="employees.length > pageSize">
+        <div class="text-center" ng-if="eCtr.employees.length > eCtr.pageSize">
             <dir-pagination-controls max-size="5"
                                      direction-links="true"
                                      boundary-links="true"
                                      auto-hide="false">
             </dir-pagination-controls>
             <div class="text-muted">
-                Page {{currentPage}} of {{getNumberOfPages()}} (Total: {{employees.length}} employees)
+                Page {{eCtr.currentPage}} of {{eCtr.getNumberOfPages()}} (Total: {{eCtr.employees.length}} employees)
             </div>
         </div>
     </div>
@@ -140,20 +178,20 @@
                     <form>
                         <div class="form-group">
                             <label>ID:</label>
-                            <p class="form-control-static">{{selectedEmployee.Id}}</p>
+                            <p class="form-control-static">{{eCtr.selectedEmployee.Id}}</p>
                         </div>
                         <div class="form-group">
                             <label>Name:</label>
-                            <p class="form-control-static">{{selectedEmployee.Name}}</p>
+                            <p class="form-control-static">{{eCtr.selectedEmployee.Name}}</p>
                         </div>
                         <div class="form-group">
                             <label>Department:</label>
-                            <p class="form-control-static">{{selectedEmployee.Department}}</p>
+                            <p class="form-control-static">{{eCtr.selectedEmployee.Department}}</p>
                         </div>
                         <div class="form-group">
                             <label>Salary ($):</label>
                             <input type="number"
-                                   ng-model="editedSalary"
+                                   ng-model="eCtr.editedSalary"
                                    class="form-control"
                                    min="0"
                                    step="1" />
@@ -164,9 +202,9 @@
                     <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
                     <button type="button"
                             class="btn btn-primary"
-                            ng-click="saveSalary()">
-                        <span ng-if="!isSaving">Save</span>
-                        <span ng-if="isSaving">
+                            ng-click="eCtr.saveSalary()">
+                        <span ng-if="!eCtr.isSaving">Save</span>
+                        <span ng-if="eCtr.isSaving">
                             <span class="spinner-border"></span> Saving...
                         </span>
                     </button>
@@ -182,26 +220,26 @@
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">
                         <span class="glyphicon glyphicon-tasks"></span>
-                        Tasks for {{selectedEmployeeForTasks.Name}}
+                        Tasks for {{eCtr.selectedEmployeeForTasks.Name}}
                     </h4>
                 </div>
                 <div class="modal-body">
-                    <div ng-if="isLoadingTasks" class="text-center">
+                    <div ng-if="eCtr.isLoadingTasks" class="text-center">
                         <span class="spinner-border"></span> Loading tasks...
                     </div>
 
-                    <div ng-if="!isLoadingTasks && employeeTasks.length === 0" class="alert alert-info">
+                    <div ng-if="!eCtr.isLoadingTasks && eCtr.employeeTasks.length === 0" class="alert alert-info">
                         No tasks assigned to this employee.
                     </div>
 
-                    <table class="table table-striped" ng-if="employeeTasks.length > 0">
+                    <table class="table table-striped" ng-if="eCtr.employeeTasks.length > 0">
                         <thead>
                             <tr>
                                 <th>Task Name</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr ng-repeat="task in employeeTasks">
+                            <tr ng-repeat="task in eCtr.employeeTasks">
                                 <td>{{task.TaskName}}</td>
                             </tr>
                         </tbody>
@@ -218,146 +256,156 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="@Url.Content("~/Scripts/angularUtils/pagination/dirPagination.js")"></script>
+
     <script>
         angular.module('MyApp', ['angularUtils.directives.dirPagination']);
     </script>
-    <script src="@Url.Content("~/Scripts/directives/loaderDirective.js")"></script>
-    <script>
-        angular.module('MyApp', ['angularUtils.directives.dirPagination'])
-            .controller('EmpCtrl', function ($scope, $http, $timeout) {
-                $scope.employees = [];
-                $scope.pageSize = 5;
-                $scope.currentPage = 1;
-                $scope.selectedEmployee = null;
-                $scope.editedSalary = 0;
-                $scope.isSaving = false;
-                $scope.employeeTasks = [];
-                $scope.selectedEmployeeForTasks = null;
-                $scope.isLoadingTasks = false;
 
-                $scope.loadEmployees = function () {
+    <script src="@Url.Content("~/Scripts/services/toastService.js")"></script>
+    <script src="@Url.Content("~/Scripts/directives/loaderDirective.js")"></script>
+
+    <script>
+        angular.module('MyApp')
+            .controller('EmpCtrl', function ($http, $timeout, toastService) {
+                var vm = this;
+
+                vm.employees = [];
+                vm.pageSize = 5;
+                vm.currentPage = 1;
+                vm.selectedEmployee = null;
+                vm.editedSalary = 0;
+                vm.isSaving = false;
+                vm.employeeTasks = [];
+                vm.selectedEmployeeForTasks = null;
+                vm.isLoadingTasks = false;
+
+                vm.loadEmployees = function () {
                     $http.get('/Employees/GetEmployees')
                         .then(function (response) {
-                            $scope.employees = response.data;
+                            vm.employees = response.data;
                         })
                         .catch(function (error) {
                             console.error('Error loading employees:', error);
+                            toastService.error('Failed to load employees');
                         });
                 };
 
-                $scope.getNumberOfPages = function () {
-                    return Math.ceil($scope.employees.length / $scope.pageSize);
+                vm.getNumberOfPages = function () {
+                    return Math.ceil(vm.employees.length / vm.pageSize);
                 };
 
-                $scope.getTotalSalary = function () {
+                vm.getTotalSalary = function () {
                     var total = 0;
-                    angular.forEach($scope.employees, function (emp) {
+                    angular.forEach(vm.employees, function (emp) {
                         total += emp.Salary || 0;
                     });
                     return total;
                 };
 
-                $scope.openModal = function (employee) {
-                    $scope.selectedEmployee = {
+                vm.openModal = function (employee) {
+                    vm.selectedEmployee = {
                         Id: employee.Id,
                         Name: employee.Name,
                         Department: employee.Department,
                         Salary: employee.Salary
                     };
-                    $scope.editedSalary = employee.Salary;
+                    vm.editedSalary = employee.Salary;
                     $timeout(function () {
                         $('#employeeModal').modal('show');
                     }, 50);
                 };
 
-                $scope.saveSalary = function () {
-                    if (!$scope.selectedEmployee || !$scope.selectedEmployee.Id) {
-                        alert('No employee selected');
+                vm.saveSalary = function () {
+                    if (!vm.selectedEmployee || !vm.selectedEmployee.Id) {
+                        toastService.error('No employee selected');
                         return;
                     }
 
-                    var salaryValue = $scope.editedSalary;
+                    var salaryValue = vm.editedSalary;
 
                     if (salaryValue === null || salaryValue === undefined || salaryValue === '') {
-                        alert('Please enter a valid salary');
+                        toastService.error('Please enter a valid salary');
                         return;
                     }
 
                     var newSalary = Number(salaryValue);
 
                     if (isNaN(newSalary)) {
-                        alert('Please enter a valid salary');
+                        toastService.error('Please enter a valid salary');
                         return;
                     }
 
                     if (newSalary <= 0) {
-                        alert('Please enter a valid salary');
+                        toastService.error('Please enter a valid salary');
                         return;
                     }
 
-                    $scope.isSaving = true;
+                    vm.isSaving = true;
 
                     return $http({
                         method: 'POST',
                         url: '/Employees/UpdateSalary',
                         params: {
-                            id: $scope.selectedEmployee.Id,
+                            id: vm.selectedEmployee.Id,
                             salary: newSalary
                         }
                     })
                         .then(function (response) {
                             if (response.data.success) {
-                                var index = $scope.employees.findIndex(function (e) {
-                                    return e.Id === $scope.selectedEmployee.Id;
+                                var index = vm.employees.findIndex(function (e) {
+                                    return e.Id === vm.selectedEmployee.Id;
                                 });
 
                                 if (index !== -1) {
-                                    $scope.employees[index].Salary = newSalary;
+                                    vm.employees[index].Salary = newSalary;
                                 }
 
                                 $('#employeeModal').modal('hide');
-                                alert('Salary updated successfully!');
+                                toastService.success('Salary updated successfully!');
                             } else {
-                                alert('Error: ' + response.data.message);
+                                toastService.error('Error: ' + response.data.message);
                             }
                         })
                         .catch(function (error) {
                             console.error('Error:', error);
-                            alert('Error updating salary');
+                            toastService.error('Error updating salary');
                         })
                         .finally(function () {
-                            $scope.isSaving = false;
+                            vm.isSaving = false;
                         });
                 };
 
-                $scope.openTasksModal = function (employee) {
-                    $scope.selectedEmployeeForTasks = employee;
-                    $scope.employeeTasks = [];
-                    $scope.isLoadingTasks = true;
+                vm.openTasksModal = function (employee) {
+                    vm.selectedEmployeeForTasks = employee;
+                    vm.employeeTasks = [];
+                    vm.isLoadingTasks = true;
 
                     $http.get('/Tasks/GetEmployeeTasks', {
                         params: { employeeId: employee.Id }
                     })
                         .then(function (response) {
                             if (response.data.success) {
-                                $scope.employeeTasks = response.data.tasks;
+                                vm.employeeTasks = response.data.tasks;
+                                if (vm.employeeTasks.length === 0) {
+                                    toastService.info('No tasks assigned to this employee');
+                                }
                             } else {
-                                alert('Error loading tasks: ' + response.data.message);
+                                toastService.error('Error loading tasks: ' + response.data.message);
                             }
                         })
                         .catch(function (error) {
                             console.error('Error loading tasks:', error);
-                            alert('Error loading tasks');
+                            toastService.error('Error loading tasks');
                         })
                         .finally(function () {
-                            $scope.isLoadingTasks = false;
+                            vm.isLoadingTasks = false;
                             $timeout(function () {
                                 $('#tasksModal').modal('show');
                             }, 50);
                         });
                 };
 
-                $scope.loadEmployees();
+                vm.loadEmployees();
             });
     </script>
 </body>
