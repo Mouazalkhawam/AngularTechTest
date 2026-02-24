@@ -12,10 +12,13 @@ namespace AngularTechTest.Controllers
     {
         private ApplicationDbContext db = new ApplicationDbContext();
 
-        // GET: Employees
         public ActionResult Index()
         {
             return View();
+        }
+        public ActionResult EmployeeSupplies()
+        {
+            return View("~/Views/Employees/EmployeeSupplies.cshtml");
         }
 
         public JsonResult GetEmployees()
@@ -24,7 +27,6 @@ namespace AngularTechTest.Controllers
             {
                 var employees = db.Employees.ToList();
 
-               
                 if (!employees.Any())
                 {
                     var initialEmployees = new List<Employee>
@@ -54,7 +56,30 @@ namespace AngularTechTest.Controllers
             }
         }
 
-       
+        public JsonResult GetEmployee(int id)
+        {
+            try
+            {
+                var employee = db.Employees.Find(id);
+                if (employee == null)
+                {
+                    return Json(new { success = false, message = "Employee not found" }, JsonRequestBehavior.AllowGet);
+                }
+                
+                return Json(new
+                {
+                    employee.Id,
+                    employee.Name,
+                    employee.Department,
+                    employee.Salary
+                }, JsonRequestBehavior.AllowGet);
+            }
+            catch (Exception ex)
+            {
+                return Json(new { success = false, message = ex.Message }, JsonRequestBehavior.AllowGet);
+            }
+        }
+
         [HttpPost]
         public JsonResult UpdateSalary(int id, decimal salary)
         {

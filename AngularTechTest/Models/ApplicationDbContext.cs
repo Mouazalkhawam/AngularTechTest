@@ -12,7 +12,9 @@ namespace AngularTechTest.Models
         }
 
         public DbSet<Employee> Employees { get; set; }
-        public DbSet<Task> Tasks { get; set; }                
-        public DbSet<EmployeeTask> EmployeeTasks { get; set; } 
+        public DbSet<Task> Tasks { get; set; }
+        public DbSet<EmployeeTask> EmployeeTasks { get; set; }
+        public DbSet<Supply> Supplies { get; set; }
+        public DbSet<EmployeeSupply> EmployeeSupplies { get; set; }
     }
 }

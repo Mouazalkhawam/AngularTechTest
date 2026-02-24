@@ -13,7 +13,7 @@ namespace AngularTechTest.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202602131316083_InitialCreate"; }
+            get { return "202602232001570_InitialCreate"; }
         }
         
         string IMigrationMetadata.Source

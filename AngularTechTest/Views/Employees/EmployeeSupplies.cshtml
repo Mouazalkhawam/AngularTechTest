@@ -1,0 +1,266 @@
+﻿﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html ng-app="MyApp">
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>Employee Supplies</title>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+    <style>
+        body {
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f8f9fa;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .employee-card {
+            background: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .employee-photo {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 48px;
+            font-weight: bold;
+            margin-right: 30px;
+        }
+
+        .employee-info {
+            flex: 1;
+        }
+
+        .info-row {
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+
+        .info-label {
+            font-weight: bold;
+            color: #555;
+            width: 120px;
+            display: inline-block;
+        }
+
+        .info-value {
+            color: #333;
+            font-size: 16px;
+        }
+
+        .table-supplies {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+            .table-supplies thead {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+            }
+
+            .table-supplies th {
+                border: none !important;
+                padding: 15px !important;
+            }
+
+            .table-supplies td {
+                padding: 12px 15px !important;
+                vertical-align: middle;
+            }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .status-assigned {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-returned {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-damaged {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .back-btn {
+            margin-bottom: 20px;
+            padding: 10px 20px;
+            border-radius: 5px;
+            background: white;
+            border: 1px solid #ddd;
+            color: #333;
+            transition: all 0.3s;
+            display: inline-block;
+            text-decoration: none;
+        }
+
+            .back-btn:hover {
+                background: #f8f9fa;
+                text-decoration: none;
+            }
+
+        .spinner-border {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            vertical-align: text-bottom;
+            border: 0.2em solid currentColor;
+            border-right-color: transparent;
+            border-radius: 50%;
+            animation: spin .75s linear infinite;
+            margin-bottom: 3px;
+        }
+
+        @@keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-container {
+            text-align: center;
+            padding: 50px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+    </style>
+</head>
+<body ng-controller="EmployeeSuppliesCtrl as vm">
+    <div class="container">
+        <a ui-sref="employees" class="btn back-btn">
+            <span class="glyphicon glyphicon-arrow-left"></span> Back to Employees
+        </a>
+
+        <div ng-if="vm.isLoading" class="loading-container">
+            <div class="loading-spinner"></div>
+            <h4>Loading employee supplies...</h4>
+        </div>
+
+        <div ng-if="!vm.isLoading && vm.employee">
+            <div class="employee-card">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="media">
+                            <div class="media-left">
+                                <div class="employee-photo">
+                                    {{vm.getInitials(vm.employee.Name)}}
+                                </div>
+                            </div>
+                            <div class="media-body employee-info">
+                                <h2 class="media-heading">{{vm.employee.Name}}</h2>
+
+                                <div class="info-row">
+                                    <span class="info-label">Department:</span>
+                                    <span class="info-value">{{vm.employee.Department}}</span>
+                                </div>
+
+                                <div class="info-row">
+                                    <span class="info-label">Salary:</span>
+                                    <span class="info-value">${{vm.employee.Salary | number:0}}</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h3>
+                <span class="glyphicon glyphicon-briefcase"></span>
+                Assigned Supplies ({{vm.employeeSupplies.length}})
+            </h3>
+
+            <div ng-if="vm.employeeSupplies.length === 0" class="alert alert-info">
+                <span class="glyphicon glyphicon-info-sign"></span>
+                No supplies assigned to this employee.
+            </div>
+
+            <table class="table table-supplies" ng-if="vm.employeeSupplies.length > 0">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Supply Name</th>
+                        <th>Type</th>
+                        <th>Price ($)</th>
+                        <th>Quantity</th>
+                        <th>Assigned Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr ng-repeat="item in vm.employeeSupplies track by $index">
+                        <td>{{$index + 1}}</td>
+                        <td>
+                            <strong>{{item.Supply.SupplyName}}</strong>
+                        </td>
+                        <td>
+                            <span class="label label-info">{{item.Supply.SupplyType}}</span>
+                        </td>
+                        <td>{{item.Supply.Price | number:2}}</td>
+                        <td>{{item.Supply.Quantity}}</td>
+                        <td>{{item.AssignedDate.slice(6, -2) | date:'dd/MM/yyyy'}}</td>
+                        <td>
+                            <span class="status-badge"
+                                  ng-class="{
+                                      'status-assigned': item.Status === 'Assigned',
+                                      'status-returned': item.Status === 'Returned',
+                                      'status-damaged': item.Status === 'Damaged'
+                                  }">
+                                {{item.Status}}
+                            </span>
+                        </td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr class="total-row">
+                        <td colspan="3" style="text-align: right;"><strong>Total Items:</strong></td>
+                        <td colspan="4"><strong>{{vm.employeeSupplies.length}} supplies</strong></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+
+        <div ng-if="!vm.isLoading && !vm.employee" class="alert alert-danger">
+            <span class="glyphicon glyphicon-exclamation-sign"></span>
+            Employee not found.
+        </div>
+    </div>
+</body>
+</html>

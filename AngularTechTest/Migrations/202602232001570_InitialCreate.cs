@@ -3,10 +3,21 @@
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddTasksTables : DbMigration
+    public partial class InitialCreate : DbMigration
     {
         public override void Up()
         {
+            CreateTable(
+                "dbo.Employees",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        Name = c.String(nullable: false),
+                        Department = c.String(nullable: false),
+                        Salary = c.Decimal(nullable: false, precision: 18, scale: 2),
+                    })
+                .PrimaryKey(t => t.Id);
+            
             CreateTable(
                 "dbo.EmployeeTasks",
                 c => new
@@ -40,6 +51,7 @@
             DropIndex("dbo.EmployeeTasks", new[] { "EmployeeId" });
             DropTable("dbo.Tasks");
             DropTable("dbo.EmployeeTasks");
+            DropTable("dbo.Employees");
         }
     }
 }

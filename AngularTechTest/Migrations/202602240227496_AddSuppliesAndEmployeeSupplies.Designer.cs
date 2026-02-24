@@ -7,13 +7,13 @@ namespace AngularTechTest.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.5.1")]
-    public sealed partial class AddTasksTables : IMigrationMetadata
+    public sealed partial class AddSuppliesAndEmployeeSupplies : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddTasksTables));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddSuppliesAndEmployeeSupplies));
         
         string IMigrationMetadata.Id
         {
-            get { return "202602151811040_AddTasksTables"; }
+            get { return "202602240227496_AddSuppliesAndEmployeeSupplies"; }
         }
         
         string IMigrationMetadata.Source
